@@ -6,28 +6,57 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <glib-2.0/glib.h>
+#include "list.h"
+
+void printGraph(Graph *g){
+	int i = 0;
+	for (i = 0; i < g->numNodes; i++){
+		printf("( %d : ", i);
+		//printList(*((g->graph)+i));
+		printf(" )\n");
+	}
+}
 
 
-typedef struct Node {
-	int degree;
-	GSList * outgoing;
-	int visited;
-} node;
-
-void readGraph(char *filename){
+void readGraph(Graph *graphObject, char *filename){
 	FILE *infile = NULL;
 	char buf[50];
 	int u, v;
+	List *pCur = NULL;
 
-	GSList **graph = NULL;
 
+
+
+	printf("Debug: fopen\n");
 	infile = fopen(filename, "r");
+
+	//step 1: determine then number of nodes.
+	
 
 	//read each line
 	if (!infile){ //file failed to open
 		printf("ERROR: file open failed.\n");
 		exit(1);
+	}
+	else {
+		//if the graph is ordered, read the last line, allocate memory once, and read the file
+		
+		printf("Debug: fseek\n");
+		fseek(infile, -50, SEEK_END);
+		printf("Debug: fgets\n");
+		fgets(buf, sizeof(buf), infile);
+		printf("Debug: fseek2\n");
+		fseek(infile, 0, 0);
+		printf("Debug: sscanf\n");
+		sscanf(buf, "%d %d", &u, &v);
+		printf("Debug: calloc(u[%d], sizeof(List)[%d]\n", u, (int)sizeof(List));
+		graphObject->nodeArray = (List *) malloc(u * sizeof(List));
+		if (!graphObject->nodeArray) {
+			printf("calloc returned null\n");
+			return;
+		}
+		printf("Debug: set numnodes\n");
+		graphObject->numNodes = u;
 	}
 	while (!feof(infile)){
 		if (!fgets (buf, sizeof(buf), infile)) { break; }//if null just end
@@ -35,10 +64,18 @@ void readGraph(char *filename){
 		// LINE: nodeID destID
 		sscanf(buf, "%d %d", &u, &v);
 
-		printf("%d %d\n", u, v);
-		if (graph) break;
+		//printf("%d %d\n", u, v);
+		if (u > graphObject->numNodes){ //need to resize array
+			graphObject->nodeArray = (List *) realloc(graphObject->nodeArray, sizeof(List) * u);
+			//zero the memory out there
+			memset(graphObject->nodeArray+(graphObject->numNodes), 0, sizeof(List)*(u-graphObject->numNodes));
+			graphObject->numNodes = u;
+		}
+		pCur = graphObject->nodeArray + (u-1);
+		insertFront(pCur, v);// insert this edge into the array
 	}
 	fclose(infile);
+	
 }
 
 void printUsage(){
@@ -50,6 +87,8 @@ int main(int argc, char *argv[]){
 	int K = 0;
 	double D =  0.0;
 	char *F;
+	Graph g;
+
 #ifdef _OPENMP
 	int rank = omp_get_thread_num();
 	int thread_count = omp_get_num_threads();
@@ -67,7 +106,8 @@ int main(int argc, char *argv[]){
 	D = atof(argv[2]);
 	F = strdup(argv[3]);
 
-	readGraph(F);
+	readGraph(&g, F);
+	printGraph(&g);
 	// for (every node in the graph) walk
 		//curr <- node i
 		//for (step = 1 to L){
