@@ -4,12 +4,13 @@
 #include <stdlib.h>
 
 typedef struct node {
-	int id;
+	int destID;
 	struct node * pNext;
 } Node;
 
 typedef struct list {
 	int size;
+	int id;
 	Node *pHead;
 } List;
 

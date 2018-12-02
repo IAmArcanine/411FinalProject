@@ -4,7 +4,7 @@
 Node *makeNode(int data){
 	Node *pNew = (Node*)malloc(sizeof(Node));
 
-	pNew->id = data;
+	pNew->destID = data;
 	pNew->pNext = NULL;
 
 	return pNew;
@@ -23,21 +23,37 @@ void insertFront(List *pL, int data){
 
 int getDestId(List *pL, int randM){
 	Node *pCur = pL->pHead;
-	int i;
-
-	for (i = 0; i < randM; i++){
+	int i = 0;
+	
+	while (i != randM-1){
 		pCur = pCur->pNext;
+		i++;
 	}
-
 	//return the id of the other end of the edge
-	return pCur->id;
+	return pCur->destID;
 }
 void printList(List *pL){
 	Node *pCur = pL->pHead;
-
-	while(pCur){
-		printf("%d, ",pCur->id);
-		pCur = pCur->pNext;
+	if (pL->size > 0){
+		//pretty print the first node
+		printf("%d", pCur->destID);
+		if (pCur->pNext) {
+			printf(", ");
+			pCur = pCur->pNext;
+		}
+		else{
+			return;
+		}
+		while(pCur){
+			printf("%d",pCur->destID);
+			if (pCur->pNext) {
+				printf(", ");
+			}
+			pCur = pCur->pNext;
+		}
+	}
+	else{
+		printf(" None ");
 	}
 }
 List * makeList(){
