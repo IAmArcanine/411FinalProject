@@ -49,10 +49,13 @@ void readGraph(Graph *graphObject, char *filename){
 	}************************************************************
 		This doesn't work when the max node never shows up as u
 	************************************************************/
-	printf("initmalloc\n");
+	//printf("initmalloc\n");
 	graphObject->nodeArray = (List *) malloc(sizeof(List));
 	graphObject->numNodes = 1;
-	printf("while loop\n");
+	graphObject->nodeArray[0].id = 0;
+	graphObject->nodeArray[0].size = 0;
+	graphObject->nodeArray[0].pHead = NULL;
+	//printf("while loop\n");
 	while (!feof(infile)){
 		if (!fgets (buf, sizeof(buf), infile)) { break; }//if null just end
 		//else
@@ -68,7 +71,7 @@ void readGraph(Graph *graphObject, char *filename){
 
 		//printf("%d %d\n", u, v);
 		if (n > graphObject->numNodes){ //need to resize array
-			printf("n[%d]\n", n);
+			//printf("n[%d]\n", n);
 			graphObject->nodeArray = (List *) realloc(graphObject->nodeArray, sizeof(List) * (n));
 			//zero the memory out there
 			memset(&graphObject->nodeArray[graphObject->numNodes], 0, sizeof(List)*((n)-graphObject->numNodes));
@@ -84,9 +87,9 @@ void readGraph(Graph *graphObject, char *filename){
 			graphObject->nodeArray[v].id = v;
 		}
 	}
-	printGraph(graphObject);
+	//printGraph(graphObject);
 	
-	printf("DEBUG: readGraph end\n");
+	//printf("DEBUG: readGraph end\n");
 }
 
 void printUsage(){
@@ -95,7 +98,7 @@ void printUsage(){
 }
 
 void findMax5(int *arr, int size){
-	printf("DEBUG: FindMax5 Start");
+	//printf("DEBUG: FindMax5 Start");
 	int i;
 	int top[5] = {-1,-1,-1,-1,-1};
 	for (i = 0; i < size; i++){
@@ -113,5 +116,5 @@ void findMax5(int *arr, int size){
 			top[2], arr[top[2]],
 			top[3], arr[top[3]],
 			top[4], arr[top[4]]);
-	printf("DEBUG: FindMax5 End");
+	//printf("DEBUG: FindMax5 End");
 }

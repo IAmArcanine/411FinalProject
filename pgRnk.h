@@ -1,6 +1,6 @@
 #ifndef PGRNK_H
 #define PGRNK_H
-
+#define _CRT_SECURE_NO_WARNINGS
 #ifdef _OPENMP
 #include </usr/local/Cellar/gcc/8.2.0/lib/gcc/8/gcc/x86_64-apple-darwin18.0.0/8.2.0/include/omp.h>
 #endif

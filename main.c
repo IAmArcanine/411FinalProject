@@ -38,14 +38,14 @@ int main(int argc, char *argv[]){
 	//printGraph(&g); //for testing
 
 
-	printf("DEBUG: starting main loop with g.numNodes[%d]\n", g.numNodes);
+	//printf("DEBUG: starting main loop with g.numNodes[%d]\n", g.numNodes);
 	for (i = 0; i < g.numNodes; i++) {  //starting at every node in the graph
 		///NOTE: the conceptual graph node is represented by a List object
 		//printf("\n");
-		printf("\tDEBUG: main loop i[%d] \n", i);
+		//printf("\tDEBUG: main loop i[%d] \n", i);
 		List *pCur = &g.nodeArray[i]; //curr <- node i
 		for (step = 1; step <= K; step++){
-			printf("\t\tDEBUG: step loop step[%d] \n", step);
+			//printf("\t\tDEBUG: step loop step[%d] \n", step);
 			//CRITICAL
 			visited[pCur->id]++;
 			//printf("%d -> ",pCur->id);
@@ -54,7 +54,7 @@ int main(int argc, char *argv[]){
 			//toss a coin
 			if (tossWeightedCoin(D) == HEADS){
 				//successor = pick a random node between 1 and n (each with prob 1/n)
-				printf("\t\tHEADS: choose random\n");
+				//printf("\t\tHEADS: choose random\n");
 				pCur = &g.nodeArray[(rand()%g.numNodes)];
 				//curr <- succ;
 			}
@@ -65,13 +65,14 @@ int main(int argc, char *argv[]){
 					pCur = &g.nodeArray[getDestId(pCur, rand()%pCur->size)];
 				}
 				else{
-					printf("\t\t\tTAILS: deadEnd\n");
+					//printf("\t\t\tTAILS: deadEnd\n");
 					pCur = &g.nodeArray[(rand()%g.numNodes)];
 				}
 			}
 		}
 	}
 	findMax5(visited, g.numNodes);
+	getchar();
 }
 
 

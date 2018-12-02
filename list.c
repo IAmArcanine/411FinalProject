@@ -25,7 +25,7 @@ int getDestId(List *pL, int randM){
 	Node *pCur = pL->pHead;
 	int i = 0;
 	
-	while (i != randM-1){
+	while (i != randM){
 		pCur = pCur->pNext;
 		i++;
 	}
