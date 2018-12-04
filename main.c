@@ -10,25 +10,22 @@ int main(int argc, char *argv[]){
 	int i = 0, step = 0;
 	Graph g;
 	int *visited = NULL;
+	int p = 1;
 
 	srand(time(NULL));
-
-#ifdef _OPENMP
-	int rank = omp_get_thread_num();
-	int thread_count = omp_get_num_threads();
-#else
-	int rank = 0;
-	int thread_count = 1;
-#endif
-	if (argc != 4){ //incorrect number of input arguments
+	if (argc != 5){ //incorrect number of input arguments
 		printUsage();
-		printf("Rank: %d, #threads: %d\n", rank, thread_count);
 		exit(1);
 	}
 
 	K = atoi(argv[1]);
 	D = atof(argv[2]);
 	F = strdup(argv[3]);
+	p = atoi(argv[4]);
+	//int rank = omp_get_thread_num();
+
+	//printf("Rank: %d, #threads: %d\n", rank, thread_count);
+	
 
 	readGraph(&g, F);
 	//created an array where arr[NODE_ID] = TIMES_VISITED
@@ -39,7 +36,18 @@ int main(int argc, char *argv[]){
 
 
 	//printf("DEBUG: starting main loop with g.numNodes[%d]\n", g.numNodes);
+	omp_lock_t visitedLock;
+	omp_init_lock(&visitedLock);
+	double t = omp_get_wtime();
+	int temp;
+	int rank = -1;
+	#pragma omp parallel for num_threads(p) private(step)// schedule(guided)
 	for (i = 0; i < g.numNodes; i++) {  //starting at every node in the graph
+		if (omp_get_thread_num() > rank){
+			temp = omp_get_thread_num();
+			#pragma omp critical
+			rank = temp;
+		}
 		///NOTE: the conceptual graph node is represented by a List object
 		//printf("\n");
 		//printf("\tDEBUG: main loop i[%d] \n", i);
@@ -47,7 +55,10 @@ int main(int argc, char *argv[]){
 		for (step = 1; step <= K; step++){
 			//printf("\t\tDEBUG: step loop step[%d] \n", step);
 			//CRITICAL
+			//omp_set_lock(&visitedLock);
+			#pragma omp atomic
 			visited[pCur->id]++;
+			//omp_unset_lock(&visitedLock);
 			//printf("%d -> ",pCur->id);
 			//CRITICAL END
 			
@@ -71,8 +82,13 @@ int main(int argc, char *argv[]){
 			}
 		}
 	}
+	omp_destroy_lock(&visitedLock);
 	findMax5(visited, g.numNodes);
-	getchar();
+	t = omp_get_wtime() - t;
+
+	printf("Using % 3d thread(s) with %d nodes, %d steps per walk, dampingVal[%f]: %f\n",
+		rank+1, g.numNodes, K, D, t);
+	//getchar();
 }
 
 

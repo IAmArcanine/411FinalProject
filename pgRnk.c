@@ -19,7 +19,7 @@ void printGraph(Graph *g){
 void readGraph(Graph *graphObject, char *filename){
 	//printf("DEBUG: readGraphStart\n");
 	FILE *infile = NULL;
-	char buf[50];
+	char buf[200];
 	int u, v;
 	int n = 0;
 
@@ -94,7 +94,7 @@ void readGraph(Graph *graphObject, char *filename){
 
 void printUsage(){
 	printf("Usage - ");
-	printf("pagerank {K: length of random walk} {D: damping ratio} {F: graph file}\n");
+	printf("pagerank {K: length of random walk} {D: damping ratio} {F: graph file} {P: #threads}\n");
 }
 
 void findMax5(int *arr, int size){
@@ -110,11 +110,11 @@ void findMax5(int *arr, int size){
 			top[0] = i;
 		}
 	}
-	printf("Top 5: \t[%d]: %d\t[%d]: %d\t[%d]: %d\t[%d]: %d\t[%d]: %d\n", 
+	/*printf("Top 5: \t[%d]: %d\t[%d]: %d\t[%d]: %d\t[%d]: %d\t[%d]: %d\n", 
 			top[0], arr[top[0]],
 			top[1], arr[top[1]],
 			top[2], arr[top[2]],
 			top[3], arr[top[3]],
-			top[4], arr[top[4]]);
+			top[4], arr[top[4]]);*/
 	//printf("DEBUG: FindMax5 End");
 }
