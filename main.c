@@ -12,7 +12,10 @@ int main(int argc, char *argv[]){
 	int *visited = NULL;
 	int p = 1;
 
-	srand(time(NULL));
+	unsigned seed = 1;
+	//*seed = (unsigned int)time(NULL);
+
+	//srand(time(NULL));
 	if (argc != 5){ //incorrect number of input arguments
 		printUsage();
 		exit(1);
@@ -27,7 +30,9 @@ int main(int argc, char *argv[]){
 	//printf("Rank: %d, #threads: %d\n", rank, thread_count);
 	
 
+	double t_input = omp_get_wtime();
 	readGraph(&g, F);
+	t_input = omp_get_wtime() - t_input;
 	//created an array where arr[NODE_ID] = TIMES_VISITED
 	//NOTE: threads will need to aquire locks to write to this memory
 	visited = (int*)calloc(g.numNodes, sizeof(int));
@@ -41,7 +46,7 @@ int main(int argc, char *argv[]){
 	double t = omp_get_wtime();
 	int temp;
 	int rank = -1;
-	#pragma omp parallel for num_threads(p) private(step)// schedule(guided)
+	#pragma omp parallel for num_threads(p) private(step) schedule(guided, 5)
 	for (i = 0; i < g.numNodes; i++) {  //starting at every node in the graph
 		if (omp_get_thread_num() > rank){
 			temp = omp_get_thread_num();
@@ -66,28 +71,30 @@ int main(int argc, char *argv[]){
 			if (tossWeightedCoin(D) == HEADS){
 				//successor = pick a random node between 1 and n (each with prob 1/n)
 				//printf("\t\tHEADS: choose random\n");
-				pCur = &g.nodeArray[(rand()%g.numNodes)];
+				pCur = &g.nodeArray[(rand_r(&seed)%g.numNodes)];
 				//curr <- succ;
 			}
 			else {// w/prob 1-D
 				//curr <- pick a random node from one of curr's out links
 				if (pCur->size){
 					//printf("\t\t\tTAILS: choose nearby\n");
-					pCur = &g.nodeArray[getDestId(pCur, rand()%pCur->size)];
+					pCur = &g.nodeArray[getDestId(pCur, rand_r(&seed)%pCur->size)];
 				}
 				else{
 					//printf("\t\t\tTAILS: deadEnd\n");
-					pCur = &g.nodeArray[(rand()%g.numNodes)];
+					pCur = &g.nodeArray[(rand_r(&seed)%g.numNodes)];
 				}
 			}
 		}
 	}
 	omp_destroy_lock(&visitedLock);
 	findMax5(visited, g.numNodes);
+	putchar('\n');
 	t = omp_get_wtime() - t;
+	//printf("Initializing from %s took %f seconds\n", F, t_input);
 
-	printf("Using % 3d thread(s) with %d nodes, %d steps per walk, dampingVal[%f]: %f\n",
-		rank+1, g.numNodes, K, D, t);
+	/*printf("Using % 3d thread(s) with %d nodes, %d steps per walk, dampingVal[%f]: %f\n",
+		rank+1, g.numNodes, K, D, t);*/
 	//getchar();
 }
 

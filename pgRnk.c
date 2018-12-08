@@ -110,11 +110,11 @@ void findMax5(int *arr, int size){
 			top[0] = i;
 		}
 	}
-	/*printf("Top 5: \t[%d]: %d\t[%d]: %d\t[%d]: %d\t[%d]: %d\t[%d]: %d\n", 
+	printf("Top 5 ( [nodeId]: #visited ): \t[%d]: %d\t[%d]: %d\t[%d]: %d\t[%d]: %d\t[%d]: %d\n", 
 			top[0], arr[top[0]],
 			top[1], arr[top[1]],
 			top[2], arr[top[2]],
 			top[3], arr[top[3]],
-			top[4], arr[top[4]]);*/
+			top[4], arr[top[4]]);
 	//printf("DEBUG: FindMax5 End");
 }
